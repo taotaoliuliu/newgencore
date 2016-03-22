@@ -1,0 +1,23 @@
+@CHARSET "UTF-8";
+
+.form-group {
+	padding-bottom: 8px;
+	margin-bottom: 0;
+	border-bottom: 1px dotted #dddddd;
+	margin-bottom: 8px;
+}
+
+legend+.control-group {
+	margin-top: 8px;
+}
+
+
+.form-horizontal .control-group {
+	margin-bottom: 8px;
+	margin-top: 20px;
+}
+
+td {
+	text-align: center;
+	 vertical-align:middle;
+}

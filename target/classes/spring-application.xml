@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+    http://www.springframework.org/schema/context   
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+    http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task-3.0.xsd     
+    http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+          default-lazy-init="true"> 
+ 
+ 
+ 	<!-- 使用Spring组件扫描的方式来实现自动注入bean -->
+	<context:component-scan base-package="com.newgen" />
+	
+	
+	
+	<!-- 定时器开关 开始 -->
+	<task:annotation-driven />	
+	<!-- 统一异常处理方式 -->
+	<bean id="exceptionHandler" class="com.newgen.core.exception.MyExceptionHandler"/>
+	
+	
+	<bean id="handlerExceptionResolver"
+    class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="exceptionMappings">
+        <props>
+            <prop key="com.newgen.core.common.AuthorizationException">redirect:/timeout</prop>
+        </props>
+    </property>
+	</bean>
+	
+	
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="suffix" value=".jsp" />
+		<property name="contentType" value="text/html;charset=utf-8" />
+		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="exposeRequestAttributes" value="true" />
+		<property name="exposeSessionAttributes" value="true" />
+		<property name="requestContextAttribute" value="request" />
+	</bean>
+
+	<bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF/jsp/" />
+		<property name="freemarkerSettings">
+			<props>
+				<!-- 单位毫秒,0不缓冲 -->
+				<prop key="template_update_delay">0</prop>
+				<prop key="default_encoding">UTF-8</prop>
+				<prop key="output_encoding">UTF-8</prop>
+				<prop key="number_format">0.##########</prop>
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="classic_compatible">true</prop>
+				<prop key="template_exception_handler">ignore</prop>
+				<prop key="url_escaping_charset">UTF-8</prop>
+				<prop key="object_wrapper">freemarker.ext.beans.BeansWrapper</prop>
+			</props>
+		</property>
+	</bean>
+	
+	
+	
+	
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+       <property name ="locations">
+           <list>
+            <value>classpath:system-config.properties</value>
+           </list>
+       </property>
+       <property name="ignoreUnresolvablePlaceholders" value="true" />
+</bean>
+
+	
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="url" value="jdbc:mysql://localhost:3306/unicontribution_qxb?useUnicode=true&amp;characterEncoding=utf-8" />
+
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="20" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="false" />
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="20" />
+		<!-- 配置监控统计拦截的filters -->
+		<property name="filters" value="stat" />
+	</bean>
+	
+	<bean id="pagePlugin" class="com.newgen.core.plugin.PagePlugin">
+		<property name="properties">
+			<props>
+				<prop key="dialect">mysql</prop>
+				<prop key="pageSqlId">.*query.*</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动匹配Mapper映射文件 -->
+		<property name="mapperLocations" value="classpath*:com/newgen/**/mybatis/*.xml"/>
+		<property name="typeAliasesPackage" value="com.newgen.yctg.bean,com.newgen.core.bean"/>
+		<property name="plugins">
+			<array>
+				<ref bean="pagePlugin" />
+			</array>
+		</property>
+	</bean>
+	<!-- 通过扫描的模式，扫描目录在com.lanyuan.mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.newgen.yctg.mapper,com.newgen.core.mapper" />
+	</bean>
+	<!-- 事务配置 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	
+	
+	
+	
+	
+	<!-- <aop:config>
+		<aop:pointcut
+			expression="execution(public * com.newgen.platform.service.*.*Impl.*(..))"
+			id="pointcut" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut" />
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="query*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="modify*" propagation="REQUIRED" />
+			<tx:method name="logicDelById" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice> -->
+
+	
+
+<!-- 	 <bean id="log4jHandlerAOP" class="com.lanyuan.logAop.LogAopAction"></bean> 
+		<aop:config proxy-target-class="true">
+		    <aop:aspect id="logAspect" ref="log4jHandlerAOP"> 
+		    <aop:pointcut id="logPointCut" expression="execution(* com.lanyuan.service.*.*Impl.* (..))" /> 
+		    <aop:around method="logAll" pointcut-ref="logPointCut" /> </aop:aspect> 
+		</aop:config> -->
+    <tx:annotation-driven/>
+
+	<!-- 隐式地向 Spring 容器注册 -->
+	<context:annotation-config />
+</beans>

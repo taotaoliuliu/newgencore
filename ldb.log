@@ -1,0 +1,8 @@
+2016-02-24 11:34:14 MutablePropertySources.java DEBUG Adding [systemProperties] PropertySource with lowest search precedence
+2016-02-24 11:34:15 MutablePropertySources.java DEBUG Adding [systemEnvironment] PropertySource with lowest search precedence
+2016-02-24 11:34:15 AbstractEnvironment.java DEBUG Initialized StandardEnvironment with PropertySources [systemProperties,systemEnvironment]
+2016-02-24 11:34:15 AbstractApplicationContext.java INFO Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@13ed9bc5: startup date [Wed Feb 24 11:34:15 CST 2016]; root of context hierarchy
+2016-02-24 11:34:15 MutablePropertySources.java DEBUG Adding [systemProperties] PropertySource with lowest search precedence
+2016-02-24 11:34:15 MutablePropertySources.java DEBUG Adding [systemEnvironment] PropertySource with lowest search precedence
+2016-02-24 11:34:15 AbstractEnvironment.java DEBUG Initialized StandardEnvironment with PropertySources [systemProperties,systemEnvironment]
+2016-02-24 11:34:15 XmlBeanDefinitionReader.java INFO Loading XML bean definitions from class path resource [applicationContext.xml]

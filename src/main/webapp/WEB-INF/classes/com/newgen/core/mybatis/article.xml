@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="com.newgen.core.mapper.ArticleMapper">
+
+<resultMap id="BaseResultMap" type="com.newgen.core.bean.Article" >
+	<result column="id" property="id"/>
+	<result column="categoryid" property="categoryid"/>
+	<result column="title" property="title"/>
+	<result column="source" property="source"/>
+	<result column="createtime" property="createtime"/>
+	
+	<result column="updatetime" property="updatetime"/>
+	<result column="digest" property="digest"/>
+	<result column="authorid" property="authorid"/>
+	<result column="editorid" property="editorid"/>
+		<result column="filename" property="filename"/>
+	
+		<result column="filepath" property="filepath"/>
+	
+
+	
+</resultMap>
+    <sql id="selectId">
+		id,
+		categoryid,
+		title,
+		source,
+		createtime,
+		updatetime,
+		digest,
+		authorid,
+		editorid,
+		keyword,
+		filename,
+		filepath
+		
+	</sql>
+	
+	
+	   <select id="query" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select
+			<include refid="selectId" />
+			,(select username from t_user where id=authorid) authorname
+		from t_article where 1=1
+		
+		<if test="t.title != null and t.title != ''">
+		and title=${t.title}
+			</if>
+		
+	
+			
+			
+			order by updatetime desc
+		
+	</select>
+    
+    
+    
+   <select id="queryAll" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="selectId" />
+		from t_article where 1=1
+		
+	</select>
+	
+	
+   <select id="getById" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="selectId" />
+		from t_article where id=#{id}
+		
+	</select>
+	
+	
+	
+	<select id="getArticleData" resultType="com.newgen.core.bean.ArticleData" parameterType="Object">
+		select
+		articleid,content
+		from t_article_data where articleid=#{id}
+		
+	</select>
+	
+	
+	
+		<insert id="add" parameterType="Object">
+
+		insert into t_article(id,
+		categoryid,
+		title,
+		source,
+		createtime,
+		updatetime,
+		digest,
+		authorid,
+		editorid,filename,filepath,keyword)
+		values(#{id},#{categoryid},#{title},#{source},#{createtime}
+		,#{updatetime},#{digest},#{authorid},#{editorid},#{filename},#{filepath},#{keyword})
+	
+	
+	
+		</insert>
+		
+			<insert id="saveArticleData" parameterType="Object">
+
+		insert into t_article_data(articleid,content,
+		allowcomment)
+		values(#{articleid},#{content},#{allowcomment})
+	
+	
+	
+		</insert>
+	
+	<update id="update" parameterType="Object">
+	
+	
+	update t_article set title=#{title},updatetime=#{updatetime},authorid=#{authorid},editorid=#{editorid}
+	,digest=#{digest},source=#{source},filename=#{filename},filepath=#{filepath}
+		
+		where id =#{id}
+	
+	</update>
+	
+	
+	<update id="updateArticleData" parameterType="Object">
+	
+	
+	update t_article_data set content=#{content}
+		
+		where articleid =#{articleid}
+	
+	</update>
+	
+	
+	
+	
+	<delete id="delete" parameterType="Object">
+	
+	delete from t_article where id=#{id}
+	</delete>
+    
+	
+    
+    
+    
+    </mapper>
+
+
+
+

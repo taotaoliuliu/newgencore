@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="com.newgen.core.mapper.UserMapper">
+
+<resultMap id="BaseResultMap" type="com.newgen.core.bean.User" >
+	<result column="id" property="id"/>
+	<result column="loginname" property="loginname"/>
+	<result column="username" property="username"/>
+	<result column="password" property="password"/>
+	<result column="phone" property="phone"/>
+	
+	
+		<result column="createtime" property="createtime"/>
+		<result column="locked" property="locked"/>
+	
+	
+	
+	
+</resultMap>
+    <sql id="selectId">
+		id,
+		loginname,
+		username,
+		password,
+		createtime,
+		phone,
+		locked
+		
+	</sql>
+	
+	
+	   <select id="query" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select
+			<include refid="selectId" />
+
+		from t_user where 1=1
+		
+		<if test="t.loginname != null and t.loginname != ''">
+		and loginname like '%${t.loginname}%'
+			</if>
+		
+		<if test="t.username != null and t.username != ''">
+		and username like '%${t.username}%'
+			</if>
+		
+			
+			order by createtime desc
+		
+	</select>
+    
+    
+    
+   <select id="getAll" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select
+		<include refid="selectId" />
+		from t_admin where 1=1
+		
+	</select>
+   <select id="getById" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="selectId" />
+		from t_user where id=#{id}
+		
+	</select>
+	
+	
+	
+	<select id="getUserByNameAndPassword" resultMap="BaseResultMap">
+		select
+		<include refid="selectId" />
+		from t_user where loginname=#{loginname} and password=#{password}
+		
+	</select>
+	
+	
+	
+	<select id="getUserByLoginName" resultMap="BaseResultMap">
+		select
+		<include refid="selectId" />
+		from t_user where loginname=#{loginname}
+		
+	</select>
+	
+	
+	
+		<insert id="add" parameterType="Object">
+
+		insert into t_user(id,
+		loginname,
+		username,
+		phone,
+		password,
+		createtime
+		)
+		values(#{id},#{loginname},#{username},#{phone},#{password},#{createtime})
+	
+	</insert>
+	
+	
+	
+	
+	
+	<insert id="saveUserRole" parameterType="Object">
+
+		insert into t_userrole(role_id,
+		user_id)
+		values(#{role_id},#{user_id})
+	
+	</insert>
+	
+	
+	
+	
+	<update id="update" parameterType="Object">
+	
+	
+	update t_news_vote set newsid=#{newsid},
+	type=#{type},
+		mediaid=#{mediaid},
+		confineobject=#{confineObject},
+		voteinterval=#{voteinterval},
+		maxitemnumber=#{maxItemNumber},
+		count=#{count},
+		endtime=#{endTime},
+		title=#{title},
+		summary=#{summary},
+		imgpath=#{imgPath},
+		imgname=#{imgName},
+		flag=#{flag},
+		createtime=#{createTime}
+		
+		
+		where id =#{id}
+	
+	</update>
+	
+	<delete id="delete" parameterType="Object">
+	
+	delete from t_news_vote where id=#{id}
+	</delete>
+    
+    
+    
+    </mapper>
+
+
+
+

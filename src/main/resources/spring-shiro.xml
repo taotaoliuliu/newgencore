@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+    http://www.springframework.org/schema/context   
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+          default-lazy-init="true"> 
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm"/>
+        <!-- 使用下面配置的缓存管理器 -->
+        <property name="cacheManager" ref="shiroCacheManager"/>
+    </bean>
+    <!--自定义Realm-->
+    <bean id="myRealm" class="com.newgen.core.shiro.MyRealm"/>
+
+    <!-- 配置shiro的过滤器工厂类，id- shiroFilter要和我们在web.xml中配置的过滤器一致 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/user/login.shtml"/>
+        <property name="successUrl" value="/user/index.shtml"/>
+        <property name="unauthorizedUrl" value="/denied.jsp"/>        
+     <property name="filterChainDefinitions">
+    	<value>
+    		/css/** = anon
+    		/resources/** = anon
+    		/admin_files/** = anon
+    		/jqwidgets-ver3.6.0/** = anon
+    		/fonts/** = anon
+    		/404/** = anon
+    		/error.jsp = anon
+    		/js/** = anon
+    		/layer-v1.8.5/** = anon
+    		/notebook/** = anon
+    		/index.jsp = anon
+			/validateCode = anon
+			/denied.jsp = anon
+           	</value>
+    	</property>
+    </bean>
+  
+  <!-- 缓存配置 -->
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:cache/ehcache-local.xml" />
+	</bean>
+    
+    
+    <bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManager" ref="cacheManager"/>
+	</bean>
+    
+    
+    
+    
+    
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+</beans>

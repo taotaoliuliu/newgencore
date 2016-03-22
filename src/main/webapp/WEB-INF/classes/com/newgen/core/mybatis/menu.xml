@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="com.newgen.core.mapper.MenuMapper">
+
+<resultMap id="BaseResultMap" type="com.newgen.core.bean.Menu" >
+	<result column="id" property="id"/>
+	<result column="powerid" property="powerid"/>
+	<result column="powername" property="powername"/>
+	<result column="fatherid" property="fatherid"/>
+	<result column="powerurl" property="powerurl"/>
+	<result column="imgurl" property="imgurl"/>
+	<result column="isbutton" property="isbutton"/>
+	<result column="sno" property="sno"/>
+	<result column="powerkey" property="powerkey"/>
+	
+</resultMap>
+    <sql id="selectId">
+		id,
+		powerid,
+		powername,
+		fatherid,
+		powerurl,
+		imgurl,
+		isbutton,
+		sno,
+		powerkey
+	</sql>
+	
+	
+	   <select id="query" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select
+			<include refid="selectId" />
+
+		from t_news_vote where 1=1
+		
+		<if test="t.mediaid != null and t.mediaid != ''">
+		and mediaid=${t.mediaid}
+			</if>
+		
+		
+			<if test="t.key != null and t.key != ''">
+				and  (title like '%${t.key}%' or author like '%${t.key}%')
+			</if>
+		
+		<if test="t.startTime != null and t.startTime != ''">
+		
+			and createtime >  '${t.startTime}'
+				
+			</if>
+			<if test="t.endTime != null and t.endTime != ''">
+				 and createtime &lt;  '${t.endTime}'
+			</if>
+			
+			
+			order by createtime desc
+		
+	</select>
+    
+    
+    
+   <select id="queryAll" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="selectId" />
+		from t_menu where 1=1
+		
+	</select>
+	
+	<select id="getUrlWithNoButton" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="selectId" />
+		from t_menu where 1=1 and isbutton=0
+		
+	</select>
+   <select id="getListByUserWithNoButton" resultMap="BaseResultMap" parameterType="com.newgen.core.bean.User">
+		SELECT
+	m.powerid,m.powername,m.powerurl,m.fatherid,m.imgurl
+FROM
+	t_menu m
+INNER JOIN t_rolemenu rm ON m.powerid = rm.menu_id
+INNER JOIN t_role r ON rm.role_id = r.id
+INNER JOIN t_userrole ur ON ur.role_id = r.id
+INNER JOIN t_user u ON u.id = ur.user_id
+AND
+u.id=#{id}
+
+and m.isbutton=0
+		
+	</select>
+	  <select id="getListByUser" resultMap="BaseResultMap" parameterType="com.newgen.core.bean.User">
+		SELECT
+	m.powerid,m.powername,m.powerurl,m.fatherid,m.imgurl,m.powerkey
+FROM
+	t_menu m
+INNER JOIN t_rolemenu rm ON m.powerid = rm.menu_id
+INNER JOIN t_role r ON rm.role_id = r.id
+INNER JOIN t_userrole ur ON ur.role_id = r.id
+INNER JOIN t_user u ON u.id = ur.user_id
+AND
+u.id=#{id}
+		
+	</select>
+	
+	
+	
+   <select id="getById" resultMap="BaseResultMap" parameterType="Object">
+		select
+		<include refid="selectId" />
+		from t_news_vote where id=#{id}
+		
+	</select>
+	
+	
+	
+	<select id="getUserByNameAndPassword" resultMap="BaseResultMap">
+		select
+		<include refid="selectId" />
+		from t_menu
+		
+	</select>
+	
+	
+	
+		<insert id="add" parameterType="Object">
+
+		insert into t_news_vote(id,
+		newsid,
+		type,
+		mediaid,
+		confineobject,
+		voteinterval,
+		maxitemnumber,
+		count,
+		endtime,
+		title,
+		summary,
+		imgpath,
+		imgname,
+		flag,
+		createtime
+		)
+		values(#{id},#{newsid},#{type},#{mediaid},#{confineObject},#{voteinterval},#{maxItemNumber},#{count},#{endTime},#{title},
+		#{summary},#{imgPath},#{imgName},#{flag},#{createTime})
+	
+	
+	
+	</insert>
+	
+	<update id="update" parameterType="Object">
+	
+	
+	update t_news_vote set newsid=#{newsid},
+	type=#{type},
+		mediaid=#{mediaid},
+		confineobject=#{confineObject},
+		voteinterval=#{voteinterval},
+		maxitemnumber=#{maxItemNumber},
+		count=#{count},
+		endtime=#{endTime},
+		title=#{title},
+		summary=#{summary},
+		imgpath=#{imgPath},
+		imgname=#{imgName},
+		flag=#{flag},
+		createtime=#{createTime}
+		
+		
+		where id =#{id}
+	
+	</update>
+	
+	<delete id="delete" parameterType="Object">
+	
+	delete from t_news_vote where id=#{id}
+	</delete>
+    
+    
+    
+    </mapper>
+
+
+
+
